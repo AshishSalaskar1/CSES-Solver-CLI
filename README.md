@@ -30,6 +30,7 @@ cses invoke
 | `cses run <file> <id>` | Quick-run against the first test case |
 | `cses test <file> <id>` | Run all test cases, show summary + TUI explorer |
 | `cses invoke` | Launch full-screen dashboard TUI |
+| `cses howto` | Show solution writing guide in terminal |
 | `cses list` | List all problems by category |
 | `cses info <id>` | Show problem details |
 | `cses seed` | Re-seed/reset the problem database |
@@ -44,17 +45,57 @@ cses list --category "Dynamic Programming" # Filter by category
 cses generate --category "Introductory Problems" --cases 25
 ```
 
+## Writing Solutions
+
+### Return-Value Mode (recommended)
+
+Define a `solve(data)` function — only its return value is judged. `print()` calls become debug output (visible in the TUI under "Debug") and **won't affect your verdict**.
+
+```python
+def solve(data: str) -> int:
+    # data = raw stdin string, e.g. "5\n2 3 1 5\n"
+    parts = data.split()
+    n = int(parts[0])
+    nums = list(map(int, parts[1:]))
+    
+    print(f"debug: n={n}")  # safe! shown as debug output
+    
+    return n * (n + 1) // 2 - sum(nums)
+```
+
+**The `data` parameter** is the raw stdin string (exactly what `sys.stdin.read()` returns), including `\n` newline characters:
+- `data.split()` → splits on all whitespace (spaces + newlines)  
+- `data.strip().split('\n')` → splits into lines
+
+**Return values:**
+- `str`, `int`, `float` → converted to string
+- `list`, `tuple` → each element on its own line
+- `None` → empty output
+
+### Legacy Mode (backward compatible)
+
+No `solve()` function — everything printed to stdout is your answer. Existing solutions work without changes:
+
+```python
+n = int(input())
+nums = list(map(int, input().split()))
+print(n * (n + 1) // 2 - sum(nums))
+```
+
+> **Tip:** Run `cses howto` for a quick in-terminal guide on both modes.
+
 ## How It Works
 
-1. **Write your solution** as a standard Python script reading from `stdin`:
+1. **Write your solution** using a `solve()` function (recommended):
    ```python
    # solution.py
-   n = int(input())
-   result = [n]
-   while n != 1:
-       n = n // 2 if n % 2 == 0 else n * 3 + 1
-       result.append(n)
-   print(*result)
+   def solve(data: str):
+       n = int(data.strip())
+       result = [n]
+       while n != 1:
+           n = n // 2 if n % 2 == 0 else n * 3 + 1
+           result.append(n)
+       return " ".join(map(str, result))
    ```
 
 2. **Run it**: `cses test solution.py 1068`

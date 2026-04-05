@@ -203,6 +203,53 @@ def test(
 
 
 @app.command()
+def howto() -> None:
+    """Show a guide on how to write solutions for the CSES CLI."""
+    guide = """
+  [bold]📖 CSES CLI — Solution Guide[/bold]
+
+  [bold cyan]RETURN-VALUE MODE (recommended)[/bold cyan]
+  [dim]──────────────────────────────[/dim]
+  Define a [bold]solve()[/bold] function. Only its return value is judged.
+  [bold]print()[/bold] calls become debug output — they won't affect your answer.
+
+    [green]def solve(data: str):[/green]
+        [dim]# data = raw stdin string, e.g. "5\\n2 3 1 5\\n"[/dim]
+        parts = data.split()
+        n = int(parts[0])
+        nums = list(map(int, parts[1:]))
+        print(f"debug: n={{n}}")        [dim]# safe! shown as debug[/dim]
+        return n * (n + 1) // 2 - sum(nums)
+
+  [bold cyan]LEGACY MODE (backward compatible)[/bold cyan]
+  [dim]──────────────────────────────[/dim]
+  No solve() function — everything printed to stdout is your answer.
+
+    n = int(input())
+    nums = list(map(int, input().split()))
+    print(n * (n + 1) // 2 - sum(nums))
+
+  [bold cyan]THE DATA PARAMETER[/bold cyan]
+  [dim]──────────────────[/dim]
+  • [bold]data[/bold] is the raw stdin string (same as sys.stdin.read())
+  • It includes [bold]\\n[/bold] newline characters between lines
+  • [bold]data.split()[/bold]              → splits on ALL whitespace (spaces + newlines)
+  • [bold]data.strip().split('\\n')[/bold] → splits into individual lines
+
+  Example: input "5\\n2 3 1 5\\n"
+    data.split()              → ['5', '2', '3', '1', '5']
+    data.strip().split('\\n') → ['5', '2 3 1 5']
+
+  [bold cyan]RETURN VALUES[/bold cyan]
+  [dim]─────────────[/dim]
+  • [bold]str, int, float[/bold] → converted to string
+  • [bold]list, tuple[/bold]     → each element printed on its own line
+  • [bold]None[/bold]            → empty output (likely wrong answer)
+"""
+    console.print(guide)
+
+
+@app.command()
 def seed() -> None:
     """Seed/reset the database with all 258 problems and sample test cases."""
     from cses_cli.seed import seed as do_seed

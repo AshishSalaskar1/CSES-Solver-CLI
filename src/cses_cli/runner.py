@@ -24,9 +24,11 @@ def run_solution(
     """
     start = time.perf_counter()
 
+    harness_path = Path(__file__).parent / "harness.py"
+
     try:
         result = subprocess.run(
-            [python_cmd, str(code_path)],
+            [python_cmd, str(harness_path), str(code_path)],
             input=test_case.input,
             capture_output=True,
             text=True,
